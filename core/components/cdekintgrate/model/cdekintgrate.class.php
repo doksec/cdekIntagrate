@@ -1,8 +1,5 @@
 <?php
 include_once 'vendor/autoload.php';
-use CdekSDK\Common;
-use CdekSDK\Requests;
-
 
 class cdekIntgrate
 {
@@ -217,8 +214,10 @@ class cdekIntgrate
     public function loadHandlerEvent(modSystemEvent $event, $scriptProperties = array())
     {
         switch ($event->name) {
-            case 'OnHandleRequest':
-            case 'OnLoadWebDocument':
+            case 'msOnManagerCustomCssJs':
+                if ($scriptProperties['page'] != 'orders') return;
+                $this->modx->controller->addLastJavascript($this->jsUrl.'ms2/init.js');
+                $this->modx->controller->addCss($this->cssUrl.'ms2/style.css');
                 break;
         }
 
