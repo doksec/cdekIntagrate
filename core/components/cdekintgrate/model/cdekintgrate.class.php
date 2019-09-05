@@ -17,6 +17,9 @@ class cdekIntgrate
     /** @var modError|null $error = */
     public $error = null;
 
+    public $jsUrl;
+    public $cssUrl;
+
 
     /**
      * @param modX $modx
@@ -39,6 +42,9 @@ class cdekIntgrate
             'cssUrl' => $assetsUrl . 'css/',
             'jsUrl' => $assetsUrl . 'js/',
         ], $config);
+
+        $this->cssUrl = $this->config['cssUrl'];
+        $this->jsUrl = $this->config['jsUrl'];
 
         $this->modx->addPackage('cdekintgrate', $this->config['modelPath']);
         $this->modx->lexicon->load('cdekintgrate:default');

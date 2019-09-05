@@ -9,10 +9,10 @@ if (!defined('MODX_CORE_PATH')) {
 }
 
 return [
-    'name' => 'cdekIntgrate',
+    'name' => 'CdekIntgrate',
     'name_lower' => 'cdekintgrate',
     'version' => '1.0.0',
-    'release' => 'beta',
+    'release' => 'pl',
     // Install package to site right after build
     'install' => true,
     'encryption_enable' => false,
@@ -23,11 +23,11 @@ return [
     // Which elements should be updated on package upgrade
     'update' => [
         'chunks' => false,
-        'menus' => true,
+        'menus' => false,
         'plugins' => true,
         'resources' => false,
         'settings' => false,
-        'snippets' => true,
+        'snippets' => false,
         'templates' => false,
         'widgets' => false,
         'policies' => false,
