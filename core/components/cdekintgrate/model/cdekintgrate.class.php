@@ -1,5 +1,7 @@
 <?php
 include_once 'vendor/autoload.php';
+use CdekSDK\Common;
+use CdekSDK\Requests;
 
 class cdekIntgrate
 {
@@ -221,6 +223,24 @@ class cdekIntgrate
                 break;
         }
 
+    }
+
+    /**
+     * Отправка заказа в сдэк
+     * @param msOrder $order
+     * @return int
+     */
+    public function CreateCdekOrder(msOrder $order) {
+        /** @var modUser $user */
+        $user = $order->getOne('User');
+        /** @var msDelivery $delivery */
+        $delivery = $order->getOne('Delivery');
+        /** @var msOrderAddress $address */
+        $address = $order->getOne('Address');
+        $products = $order->getMany('Products');
+
+
+        return 123;
     }
 
 
