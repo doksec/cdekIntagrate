@@ -1,4 +1,8 @@
 <?php
+include_once 'vendor/autoload.php';
+use CdekSDK\Common;
+use CdekSDK\Requests;
+
 
 class cdekIntgrate
 {
@@ -19,6 +23,11 @@ class cdekIntgrate
 
     public $jsUrl;
     public $cssUrl;
+    /**
+     * CDEK API
+     * @var \CdekSDK\CdekClient $client
+     */
+    public $client;
 
 
     /**
@@ -53,6 +62,12 @@ class cdekIntgrate
         if ($this->pdoTools = $this->modx->getService('pdoFetch')) {
             $this->pdoTools->setConfig($this->config);
         }
+
+        $account = 'z9GRRu7FxmO53CQ9cFfI6qiy32wpfTkd';
+        $password = 'w24JTCv4MnAcuRTx0oHjHLDtyt3I6IBq';
+        $this->client = new \CdekSDK\CdekClient($account, $password, new \GuzzleHttp\Client([
+            'base_uri' => 'https://integration.edu.cdek.ru',
+        ]));
 
     }
 
