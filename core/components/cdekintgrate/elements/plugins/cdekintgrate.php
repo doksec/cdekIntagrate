@@ -7,5 +7,6 @@ switch ($modx->event->name) {
     case 'msOnManagerCustomCssJs':
         if ($page != 'orders') return;
         $modx->controller->addLastJavascript($cdekIntgrate->jsUrl.'ms2/init.js');
+        $modx->controller->addCss($cdekIntgrate->cssUrl.'ms2/style.css');
         break;
 }
