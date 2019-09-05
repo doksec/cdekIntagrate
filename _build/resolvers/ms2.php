@@ -16,7 +16,6 @@ if ($transport->xpdo) {
                 $modx->exec($sql);
                 $modx->log(3, "Добавлено поле <b>$item</b> в $table");
             }
-            $modx->log(3, 'Пробую <b>CdekIntegratorFields</b>');
             /** @var miniShop2 $miniShop2 */
             if ($miniShop2 = $modx->getService('miniShop2')) {
                 $miniShop2->addPlugin('CdekIntegratorFields', '{core_path}components/cdekintgrate/ms2/index.php');
