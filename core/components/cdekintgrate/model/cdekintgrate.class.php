@@ -238,8 +238,6 @@ class cdekIntgrate
     {
         /** @var modUser $user */
         $user = $msOrder->getOne('User');
-        /** @var msDelivery $delivery */
-        $delivery = $msOrder->getOne('Delivery');
         /** @var msOrderAddress $address */
         $address = $msOrder->getOne('Address');
         $products = $msOrder->getMany('Products');
@@ -321,6 +319,36 @@ class cdekIntgrate
         }
 
         return $this->out('Заказ успешно отправлен в сдэк', true, ['number' => $order->getNumber(), 'inner_cdek' => $order->getDispatchNumber()]);
+    }
+
+    public function createCdekPdf(msOrder $msOrder)
+    {
+        /** @var msOrderAddress $address */
+        $address = $msOrder->getOne('Address');
+
+        if (!$dispatchNumber = $address->get('inner_cdek_id')) {
+            return $this->out('Необходимо сначала отправить заказ в сдэк');
+        }
+
+        $request = new Requests\PrintReceiptsRequest([
+            'CopyCount' => 4,
+        ]);
+
+
+        $request->addOrder(Common\Order::withDispatchNumber($dispatchNumber));
+
+        $response = $this->client->sendPrintReceiptsRequest($request);
+
+        if ($response->hasErrors()) {
+            return $this->out($response->getMessages());
+        }
+
+        $baseUrl = $this->config['assetsUrl'] . 'pdf/';
+        $basePath = MODX_BASE_PATH . $baseUrl;
+        $name = str_replace('/', '_', $msOrder->get('num')) . '.pdf';
+        file_put_contents($basePath . $name, (string)$response->getBody());
+
+        return $this->out('Успешно', true, ['url' => $baseUrl . $name]);
     }
 
     public function out($msg, $success = false, $obj = null)

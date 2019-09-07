@@ -23,7 +23,7 @@ Ext.ComponentMgr.onAvailable('minishop2-window-order-update', function () {
                             anchor: '100%',
                             text: '<i class="icon icon-paper-plane"></i> Отправить в сдэк',
                             handler: function () {
-                                let mask = new Ext.LoadMask(self.bwrap.id, {msg:"Пожалуйста, подождите"});
+                                let mask = new Ext.LoadMask(self.bwrap.id, {msg:"Ожидаем ответа от СДЭК"});
                                 Ext.Ajax.on('beforerequest', function () {
                                     mask.show();
                                 }, this);
@@ -42,8 +42,6 @@ Ext.ComponentMgr.onAvailable('minishop2-window-order-update', function () {
                                         } else {
                                             Ext.Msg.alert('Ошибка', response.message);
                                         }
-
-                                        console.log(response);
                                     },
                                     failure: function (resp) {
                                         Ext.Msg.alert('Внимание', 'Ошибка ajax запроса');
@@ -61,7 +59,36 @@ Ext.ComponentMgr.onAvailable('minishop2-window-order-update', function () {
                             anchor: '100%',
                             text: '<i class="icon icon-file"></i> Накладная',
                             handler: function () {
-                                console.log('test');
+                                let mask = new Ext.LoadMask(self.bwrap.id, {msg:"Генерируем PDF"});
+                                Ext.Ajax.on('beforerequest', function () {
+                                    mask.show();
+                                }, this);
+                                Ext.Ajax.on('requestcomplete', function () {
+                                    mask.hide();
+                                }, this);
+                                Ext.Ajax.on('requestexception', function () {
+                                    mask.hide();
+                                }, this);
+                                Ext.Ajax.request({
+                                    url: '/assets/components/cdekintgrate/action.php',
+                                    success: function (resp) {
+                                        const response = JSON.parse(resp.responseText);
+                                        if (response.success) {
+                                            Ext.Msg.alert('Успешно', response.message);
+                                            window.location.href = response.object.url;
+                                        } else {
+                                            Ext.Msg.alert('Ошибка', response.message);
+                                        }
+
+                                    },
+                                    failure: function (resp) {
+                                        Ext.Msg.alert('Внимание', 'Ошибка ajax запроса');
+                                    },
+                                    params: {
+                                        action: 'pdf',
+                                        order_id: self.record.id,
+                                    }
+                                });
                             }
                         }
                     ]
