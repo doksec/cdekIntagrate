@@ -16,6 +16,11 @@ if ($transport->xpdo) {
                 $modx->exec($sql);
                 $modx->log(3, "Добавлено поле <b>$item</b> в $table");
             }
+
+            $table = $modx->getTableName('msOrderAddress');
+            $sql = "ALTER TABLE $table  ADD cdek_track varchar(255) NULL;";
+            $modx->exec($sql);
+            $modx->log(3, "Добавлено поле <b>cdek_track</b> в $table");
             /** @var miniShop2 $miniShop2 */
             if ($miniShop2 = $modx->getService('miniShop2')) {
                 $miniShop2->addPlugin('CdekIntegratorFields', '{core_path}components/cdekintgrate/ms2/index.php');
