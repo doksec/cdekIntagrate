@@ -8,7 +8,7 @@ if ($transport->xpdo) {
     switch ($options[xPDOTransport::PACKAGE_ACTION]) {
         case xPDOTransport::ACTION_INSTALL:
         case xPDOTransport::ACTION_UPGRADE:
-            $fields = ['cdek_id'];
+            $fields = ['cdek_id', 'inner_cdek_id'];
 
             foreach ($fields as $item) {
                 $table = $modx->getTableName('msOrderAddress');

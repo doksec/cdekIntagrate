@@ -3,6 +3,7 @@ console.log('cdek init');
 
 Ext.ComponentMgr.onAvailable('minishop2-window-order-update', function () {
     let thisContainer = this.fields.items[0].items[3].items,
+        self = this,
         dataPush = {
             columnWidth: .98,
             layout: 'column',
@@ -22,7 +23,19 @@ Ext.ComponentMgr.onAvailable('minishop2-window-order-update', function () {
                             anchor: '100%',
                             text: '<i class="icon icon-paper-plane"></i> Отправить в сдэк',
                             handler: function () {
-                                console.log('test');
+                                Ext.Ajax.request({ //делаем ajax запрос на наш контроллер
+                                    url: '/assets/components/cdekintgrate/action.php',
+                                    success: function(resp) {
+                                        console.log(resp);
+                                    },
+                                    failure: function(resp) {
+                                        Ext.Msg.alert('Внимание', 'Ошибка ajax запроса');
+                                    },
+                                    params: {
+                                        action: 'send',
+                                        order_id: self.record.id,
+                                    }
+                                });
                             }
                         }, {
                             xtype: 'button',
@@ -51,13 +64,7 @@ Ext.ComponentMgr.onAvailable('minishop2-window-order-update', function () {
                             name: 'addr_cdek_id',
                             fieldLabel: 'ID города',
                             anchor: '100%'
-                        },
-                        {
-                            xtype: 'displayfield',
-                            name: 'createdon',
-                            fieldLabel: 'ID тарифа',
-                            anchor: '100%'
-                        },
+                        }
                     ]
                 }
             ]

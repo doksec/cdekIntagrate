@@ -228,9 +228,9 @@ class cdekIntgrate
     /**
      * Отправка заказа в сдэк
      * @param msOrder $order
-     * @return int
+     * @return int 
      */
-    public function CreateCdekOrder(msOrder $order) {
+    public function createCdekOrder(msOrder $order) {
         /** @var modUser $user */
         $user = $order->getOne('User');
         /** @var msDelivery $delivery */
