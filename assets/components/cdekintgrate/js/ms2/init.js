@@ -72,7 +72,7 @@ Ext.ComponentMgr.onAvailable('minishop2-window-order-update', function () {
                     items: [
                         {
                             xtype: 'displayfield',
-                            name: 'createdon',
+                            name: 'addr_inner_cdek_id',
                             fieldLabel: 'ID в СДЭК',
                             anchor: '100%'
                         },

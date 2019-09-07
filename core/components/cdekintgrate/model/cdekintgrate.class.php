@@ -311,9 +311,14 @@ class cdekIntgrate
             return $this->out($error);
         }
 
-        $order = $response->getOrders()[0];
+        $orders = $response->getOrders();
+        foreach ($orders as $item) {
+            $order = $item;
+        }
         $address->set('inner_cdek_id', $order->getDispatchNumber());
-        $address->save();
+        if (!$address->save()) {
+            return $this->out('Не сохранился адрес');
+        }
 
         return $this->out('Заказ успешно отправлен в сдэк', true, ['number' => $order->getNumber(), 'inner_cdek' => $order->getDispatchNumber()]);
     }
