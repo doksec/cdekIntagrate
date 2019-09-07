@@ -324,6 +324,11 @@ class cdekIntgrate
         return $this->out('Заказ успешно отправлен в сдэк', true, ['number' => $order->getNumber(), 'inner_cdek' => $order->getDispatchNumber()]);
     }
 
+    /**
+     * Генерирует pdf от сдэка и сохраняет его
+     * @param msOrder $msOrder
+     * @return array
+     */
     public function createCdekPdf(msOrder $msOrder)
     {
         /** @var msOrderAddress $address */
@@ -352,6 +357,13 @@ class cdekIntgrate
         file_put_contents($basePath . $name, (string)$response->getBody());
 
         return $this->out('Успешно', true, ['url' => $baseUrl . $name]);
+    }
+
+    public function getTrackCdekPdf(msOrder $msOrder) {
+        /** @var msOrderAddress $address */
+        $address = $msOrder->getOne('Address');
+
+
     }
 
     public function out($msg, $success = false, $obj = null)
