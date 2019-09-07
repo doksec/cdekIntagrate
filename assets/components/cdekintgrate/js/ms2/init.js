@@ -25,10 +25,17 @@ Ext.ComponentMgr.onAvailable('minishop2-window-order-update', function () {
                             handler: function () {
                                 Ext.Ajax.request({ //делаем ajax запрос на наш контроллер
                                     url: '/assets/components/cdekintgrate/action.php',
-                                    success: function(resp) {
-                                        console.log(resp);
+                                    success: function (resp) {
+                                        const response = JSON.parse(resp.responseText);
+                                        if (response.success) {
+                                            Ext.Msg.alert('Успешно', response.msg);
+                                        } else {
+                                            Ext.Msg.alert('Ошибка', response.msg + ' (подробнее в консоли)');
+                                        }
+
+                                        console.log(response);
                                     },
-                                    failure: function(resp) {
+                                    failure: function (resp) {
                                         Ext.Msg.alert('Внимание', 'Ошибка ajax запроса');
                                     },
                                     params: {
