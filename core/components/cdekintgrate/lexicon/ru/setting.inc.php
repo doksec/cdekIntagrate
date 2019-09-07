@@ -2,5 +2,5 @@
 
 $_lang['area_cdekintgrate_main'] = 'Основные';
 
-$_lang['setting_cdekintgrate_some_setting'] = 'Какая-то настройка';
-$_lang['setting_cdekintgrate_some_setting_desc'] = 'Это описание для какой-то настройки';
+$_lang['setting_cdekintgrate_tests'] = 'Включить тестовый режим?';
+$_lang['setting_cdekintgrate_tests'] = 'Если эта настройка включена, то сдэк будет отправлять заказы по тестовым данным';

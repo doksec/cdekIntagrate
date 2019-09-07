@@ -63,14 +63,17 @@ class cdekIntgrate
             $this->pdoTools->setConfig($this->config);
         }
 
-        /**
-         * TODO: Сделать порлучение данных а также переход в DEV режим
-         */
-        $account = 'z9GRRu7FxmO53CQ9cFfI6qiy32wpfTkd';
-        $password = 'w24JTCv4MnAcuRTx0oHjHLDtyt3I6IBq';
-        $this->client = new \CdekSDK\CdekClient($account, $password, new \GuzzleHttp\Client([
-            'base_uri' => 'https://integration.edu.cdek.ru',
-        ]));
+        $account = $this->modx->getOption('cdek_auth_login', []);
+        $password = $this->modx->getOption('cdek_auth_password', []);
+        if ($this->modx->getOption('cdekintgrate_tests', [], true)) {
+            $account = 'z9GRRu7FxmO53CQ9cFfI6qiy32wpfTkd';
+            $password = 'w24JTCv4MnAcuRTx0oHjHLDtyt3I6IBq';
+            $this->client = new \CdekSDK\CdekClient($account, $password, new \GuzzleHttp\Client([
+                'base_uri' => 'https://integration.edu.cdek.ru',
+            ]));
+        } else {
+            $this->client = new \CdekSDK\CdekClient($account, $password);
+        }
 
     }
 
