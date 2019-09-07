@@ -303,13 +303,12 @@ class cdekIntgrate
         $response = $this->client->sendDeliveryRequest($request);
 
         if ($response->hasErrors()) {
-            $errors = [];
-
-            foreach ($response->getErrors() as $order) {
-                $errors[] = $order->getMessage();
+            $error = '';
+            foreach ($response->getErrors() as $key => $order) {
+                $error = $order->getMessage();
             }
 
-            return $this->out('Несколько ошибок при создании', false, $errors);
+            return $this->out($error);
         }
 
         $order = $response->getOrders()[0];

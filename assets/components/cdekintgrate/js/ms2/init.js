@@ -23,14 +23,24 @@ Ext.ComponentMgr.onAvailable('minishop2-window-order-update', function () {
                             anchor: '100%',
                             text: '<i class="icon icon-paper-plane"></i> Отправить в сдэк',
                             handler: function () {
-                                Ext.Ajax.request({ //делаем ajax запрос на наш контроллер
+                                let mask = new Ext.LoadMask(self.bwrap.id, {msg:"Пожалуйста, подождите"});
+                                Ext.Ajax.on('beforerequest', function () {
+                                    mask.show();
+                                }, this);
+                                Ext.Ajax.on('requestcomplete', function () {
+                                    mask.hide();
+                                }, this);
+                                Ext.Ajax.on('requestexception', function () {
+                                    mask.hide();
+                                }, this);
+                                Ext.Ajax.request({
                                     url: '/assets/components/cdekintgrate/action.php',
                                     success: function (resp) {
                                         const response = JSON.parse(resp.responseText);
                                         if (response.success) {
-                                            Ext.Msg.alert('Успешно', response.msg);
+                                            Ext.Msg.alert('Успешно', response.message);
                                         } else {
-                                            Ext.Msg.alert('Ошибка', response.msg + ' (подробнее в консоли)');
+                                            Ext.Msg.alert('Ошибка', response.message);
                                         }
 
                                         console.log(response);
