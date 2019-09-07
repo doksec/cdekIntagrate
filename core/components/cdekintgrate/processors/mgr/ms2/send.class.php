@@ -26,8 +26,12 @@ class sendCdekProcessor extends modProcessor
             return $this->failure('Не получен заказ');
         }
 
-        $cdekOrder = $this->cdekClass->createCdekOrder($this->msOrder);
-        return $this->success('Заказ успешно создан в личном кабинете сдэк', $cdekOrder);
+        $response = $this->cdekClass->createCdekOrder($this->msOrder);
+        if (!$response['success']) {
+            return $this->failure($response['msg'], $response['obj']);
+        }
+
+        return $this->success($response['msg'], $response['obj']);
     }
 
 }

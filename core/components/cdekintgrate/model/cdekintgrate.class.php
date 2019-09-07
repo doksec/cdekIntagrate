@@ -1,5 +1,6 @@
 <?php
 include_once 'vendor/autoload.php';
+
 use CdekSDK\Common;
 use CdekSDK\Requests;
 
@@ -62,6 +63,9 @@ class cdekIntgrate
             $this->pdoTools->setConfig($this->config);
         }
 
+        /**
+         * TODO: Сделать порлучение данных а также переход в DEV режим
+         */
         $account = 'z9GRRu7FxmO53CQ9cFfI6qiy32wpfTkd';
         $password = 'w24JTCv4MnAcuRTx0oHjHLDtyt3I6IBq';
         $this->client = new \CdekSDK\CdekClient($account, $password, new \GuzzleHttp\Client([
@@ -164,9 +168,9 @@ class cdekIntgrate
     /**
      * Method loads custom classes from specified directory
      *
+     * @return void
      * @var string $dir Directory for load classes
      *
-     * @return void
      */
     public function loadCustomClasses($dir)
     {
@@ -218,8 +222,8 @@ class cdekIntgrate
         switch ($event->name) {
             case 'msOnManagerCustomCssJs':
                 if ($scriptProperties['page'] != 'orders') return;
-                $this->modx->controller->addLastJavascript($this->jsUrl.'ms2/init.js');
-                $this->modx->controller->addCss($this->cssUrl.'ms2/style.css');
+                $this->modx->controller->addLastJavascript($this->jsUrl . 'ms2/init.js');
+                $this->modx->controller->addCss($this->cssUrl . 'ms2/style.css');
                 break;
         }
 
@@ -227,79 +231,101 @@ class cdekIntgrate
 
     /**
      * Отправка заказа в сдэк
-     * @param msOrder $order
-     * @return int 
+     * @param msOrder $msOrder
+     * @return array
      */
-    public function createCdekOrder(msOrder $order) {
+    public function createCdekOrder(msOrder $msOrder)
+    {
         /** @var modUser $user */
-        $user = $order->getOne('User');
+        $user = $msOrder->getOne('User');
         /** @var msDelivery $delivery */
-        $delivery = $order->getOne('Delivery');
+        $delivery = $msOrder->getOne('Delivery');
         /** @var msOrderAddress $address */
-        $address = $order->getOne('Address');
-        $products = $order->getMany('Products');
+        $address = $msOrder->getOne('Address');
+        $products = $msOrder->getMany('Products');
+
+        /** @var MsCdek $tariffID */
+        $tariffID = $this->modx->getObject('MsCdek', [
+            'id_delivery' => $msOrder->get('delivery')
+        ]);
+
+        if (!$tariffID) {
+            return $this->out('Не найден ID тарифа отправления');
+        } else {
+            $tariffID = $tariffID->get('id_tarif');
+        }
 
         $order = new Common\Order([
-            'Number'   => 'TEST-123456',
-            'SendCityCode'    => 44, // Москва
-            'RecCityPostCode' => '630001', // Новосибирск
-            'RecipientName'  => 'Иван Петров',
-            'RecipientEmail' => 'petrov@test.ru',
-            'Phone'          => '+7 (383) 202-22-50',
-            'TariffTypeCode' => 139, // Посылка дверь-дверь от ИМ
+            'Number' => $msOrder->get('num'),
+            'SendCityPostCode' => $this->modx->getOption('cdek_senderCityPostCode', [], 344000),
+            'RecCityPostCode' => $address->get('index'),
+            'RecCityCode' => $address->get('cdek_id'),
+            'RecipientName' => $address->get('receiver'),
+            'RecipientEmail' => $user->Profile->get('email'),
+            'Phone' => $user->Profile->get('mobilephone'),
+            'TariffTypeCode' => $tariffID,
         ]);
 
         $order->setAddress(Common\Address::create([
-            'Street' => 'Холодильная улица',
-            'House'  => '16',
-            'Flat'   => '22',
+            'Street' => $address->get('street'),
+            'House' => $address->get('building'),
+            'Flat' => $address->get('room'),
         ]));
 
         $package = Common\Package::create([
-            'Number'  => 'TEST-123456',
-            'BarCode' => 'TEST-123456',
-            'Weight'  => 500, // Общий вес (в граммах)
-            'SizeA'   => 10, // Длина (в сантиметрах), в пределах от 1 до 1500
-            'SizeB'   => 10,
-            'SizeC'   => 10,
+            'Number' => $msOrder->get('num'),
+            'BarCode' => $msOrder->get('num'),
+            'Weight' => $msOrder->get('weight'),
+            'SizeA' => 1,
+            'SizeB' => 1,
+            'SizeC' => 1,
         ]);
 
-        $package->addItem(new Common\Item([
-            'WareKey' => 'NN0001', // Идентификатор/артикул товара/вложения
-            'Cost'    => 500, // Объявленная стоимость товара (за единицу товара)
-            'Payment' => 0, // Оплата за товар при получении (за единицу товара)
-            'Weight'  => 120, // Вес (за единицу товара, в граммах)
-            'Amount'  => 2, // Количество единиц одноименного товара (в штуках)
-            'Comment' => 'Test item',
-        ]));
+        /** @var msOrderProduct $product */
+        foreach ($products as $product) {
+            $package->addItem(new Common\Item([
+                'WareKey' => $product->get('product_id'),
+                'Cost' => $product->get('price'),
+                'Payment' => 0, // Оплата за товар при получении (за единицу товара)
+                'Weight' => $product->get('weight'),
+                'Amount' => $product->get('count'),
+                'Comment' => $product->get('name'),
+            ]));
+        }
 
         $order->addPackage($package);
 
         $request = new Requests\DeliveryRequest([
-            'Number' => 'TESTING123',
+            'Number' => 'Delivery-' . $msOrder->get('num'),
         ]);
         $request->addOrder($order);
 
-        $response = $client->sendDeliveryRequest($request);
+        $response = $this->client->sendDeliveryRequest($request);
 
         if ($response->hasErrors()) {
-            // обработка ошибок
+            $errors = [];
 
             foreach ($response->getErrors() as $order) {
-                // заказы с ошибками
-                $order->getMessage();
-                $order->getErrorCode();
-                $order->getNumber();
+                $errors[] = $order->getMessage();
             }
+
+            return $this->out('Несколько ошибок при создании', false, $errors);
         }
 
-        foreach ($response->getOrders() as $order) {
-            // сверяем данные заказа, записываем номер
-            $order->getNumber();
-            $order->getDispatchNumber();
-            break;
-        }
-        return 123;
+        $order = $response->getOrders()[0];
+        $address->set('inner_cdek_id', $order->getDispatchNumber());
+        $address->save();
+
+        return $this->out('Заказ успешно отправлен в сдэк', true, ['number' => $order->getNumber(), 'inner_cdek' => $order->getDispatchNumber()]);
+    }
+
+    public function out($msg, $success = false, $obj = null)
+    {
+        return [
+            'success' => $success,
+            'msg' => $msg,
+            'obj' => $obj
+        ];
     }
 
 
