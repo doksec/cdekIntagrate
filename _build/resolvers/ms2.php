@@ -8,7 +8,7 @@ if ($transport->xpdo) {
     switch ($options[xPDOTransport::PACKAGE_ACTION]) {
         case xPDOTransport::ACTION_INSTALL:
         case xPDOTransport::ACTION_UPGRADE:
-            $fields = ['cdek_id', 'inner_cdek_id'];
+            $fields = ['cdek_id', 'inner_cdek_id', 'pvz_id'];
 
             foreach ($fields as $item) {
                 $table = $modx->getTableName('msOrderAddress');
@@ -17,10 +17,6 @@ if ($transport->xpdo) {
                 $modx->log(3, "Добавлено поле <b>$item</b> в $table");
             }
 
-            $table = $modx->getTableName('msOrderAddress');
-            $sql = "ALTER TABLE $table  ADD cdek_track varchar(255) NULL;";
-            $modx->exec($sql);
-            $modx->log(3, "Добавлено поле <b>cdek_track</b> в $table");
             /** @var miniShop2 $miniShop2 */
             if ($miniShop2 = $modx->getService('miniShop2')) {
                 $miniShop2->addPlugin('CdekIntegratorFields', '{core_path}components/cdekintgrate/ms2/index.php');

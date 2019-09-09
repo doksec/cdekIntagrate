@@ -3,7 +3,7 @@ return [
     'fields' => [
         'cdek_id' => NULL,
         'inner_cdek_id' => NULL,
-        'cdek_track' => NULL,
+        'pvz_id' => NULL,
     ],
     'fieldMeta' => [
         'cdek_id' => [
@@ -18,10 +18,10 @@ return [
             'phptype' => 'integer',
             'null' => true,
         ],
-        'cdek_track' => [
-            'dbtype' => 'varchar',
-            'precision' => '255',
-            'phptype' => 'string',
+        'pvz_id' => [
+            'dbtype' => 'int',
+            'precision' => '10',
+            'phptype' => 'integer',
             'null' => true,
         ],
     ]

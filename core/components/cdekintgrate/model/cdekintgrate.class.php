@@ -263,7 +263,7 @@ class cdekIntgrate
             'RecCityCode' => $address->get('cdek_id'),
             'RecipientName' => $address->get('receiver'),
             'RecipientEmail' => $user->Profile->get('email'),
-            'Phone' => $user->Profile->get('mobilephone'),
+            'Phone' => $this->modx->getOption('senderPhone', [], '+79996991374'), //TODO: WTF?
             'TariffTypeCode' => $tariffID,
         ]);
 
@@ -357,13 +357,6 @@ class cdekIntgrate
         file_put_contents($basePath . $name, (string)$response->getBody());
 
         return $this->out('Успешно', true, ['url' => $baseUrl . $name]);
-    }
-
-    public function getTrackCdekPdf(msOrder $msOrder) {
-        /** @var msOrderAddress $address */
-        $address = $msOrder->getOne('Address');
-
-
     }
 
     public function out($msg, $success = false, $obj = null)

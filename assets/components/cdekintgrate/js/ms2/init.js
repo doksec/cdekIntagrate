@@ -88,42 +88,6 @@ Ext.ComponentMgr.onAvailable('minishop2-window-order-update', function () {
                                     }
                                 });
                             }
-                        }, {
-                            xtype: 'button',
-                            fieldLabel: '',
-                            anchor: '100%',
-                            text: '<i class="icon icon-truck"></i> Получить трек номер',
-                            handler: function () {
-                                let mask = new Ext.LoadMask(self.bwrap.id, {msg:"Получаем трек-номер"});
-                                Ext.Ajax.on('beforerequest', function () {
-                                    mask.show();
-                                }, this);
-                                Ext.Ajax.on('requestcomplete', function () {
-                                    mask.hide();
-                                }, this);
-                                Ext.Ajax.on('requestexception', function () {
-                                    mask.hide();
-                                }, this);
-                                Ext.Ajax.request({
-                                    url: '/assets/components/cdekintgrate/action.php',
-                                    success: function (resp) {
-                                        const response = JSON.parse(resp.responseText);
-                                        if (response.success) {
-                                            Ext.Msg.alert('Успешно', response.message);
-                                        } else {
-                                            Ext.Msg.alert('Ошибка', response.message);
-                                        }
-
-                                    },
-                                    failure: function (resp) {
-                                        Ext.Msg.alert('Внимание', 'Ошибка ajax запроса');
-                                    },
-                                    params: {
-                                        action: 'track',
-                                        order_id: self.record.id,
-                                    }
-                                });
-                            }
                         }
                     ]
                 },
@@ -141,12 +105,6 @@ Ext.ComponentMgr.onAvailable('minishop2-window-order-update', function () {
                             xtype: 'displayfield',
                             name: 'addr_cdek_id',
                             fieldLabel: 'ID города',
-                            anchor: '100%'
-                        },
-                        {
-                            xtype: 'displayfield',
-                            name: 'addr_cdek_track',
-                            fieldLabel: 'Трек номер',
                             anchor: '100%'
                         }
                     ]
