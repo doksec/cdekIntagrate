@@ -8,7 +8,6 @@ Ext.ComponentMgr.onAvailable('minishop2-window-order-update', function () {
             columnWidth: .98,
             layout: 'column',
             cls: 'cdek-column',
-            style: 'padding:15pxd;text-align:center;',
             border: false,
             items: [
                 {
@@ -22,7 +21,7 @@ Ext.ComponentMgr.onAvailable('minishop2-window-order-update', function () {
                             anchor: '100%',
                             text: '<i class="icon icon-paper-plane"></i> Отправить в сдэк',
                             handler: function () {
-                                let mask = new Ext.LoadMask(self.bwrap.id, {msg:"Ожидаем ответа от СДЭК"});
+                                let mask = new Ext.LoadMask(self.bwrap.id, {msg: "Ожидаем ответа от СДЭК"});
                                 Ext.Ajax.on('beforerequest', function () {
                                     mask.show();
                                 }, this);
@@ -57,7 +56,7 @@ Ext.ComponentMgr.onAvailable('minishop2-window-order-update', function () {
                             anchor: '100%',
                             text: '<i class="icon icon-file"></i> Накладная',
                             handler: function () {
-                                let mask = new Ext.LoadMask(self.bwrap.id, {msg:"Генерируем PDF"});
+                                let mask = new Ext.LoadMask(self.bwrap.id, {msg: "Генерируем PDF"});
                                 Ext.Ajax.on('beforerequest', function () {
                                     mask.show();
                                 }, this);
@@ -95,6 +94,12 @@ Ext.ComponentMgr.onAvailable('minishop2-window-order-update', function () {
                     columnWidth: .48,
                     layout: 'form',
                     items: [
+                        {
+                            xtype: 'textfield',
+                            name: 'addr_pvz_id',
+                            fieldLabel: 'Код пункта самовывоза',
+                            anchor: '100%'
+                        },
                         {
                             xtype: 'displayfield',
                             name: 'addr_inner_cdek_id',

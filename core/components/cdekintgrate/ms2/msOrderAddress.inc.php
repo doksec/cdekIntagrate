@@ -19,9 +19,9 @@ return [
             'null' => true,
         ],
         'pvz_id' => [
-            'dbtype' => 'int',
-            'precision' => '10',
-            'phptype' => 'integer',
+            'dbtype' => 'varchar',
+            'precision' => '255',
+            'phptype' => 'string',
             'null' => true,
         ],
     ]

@@ -271,6 +271,7 @@ class cdekIntgrate
             'Street' => $address->get('street'),
             'House' => $address->get('building'),
             'Flat' => $address->get('room'),
+            'PvzCode' => $address->get('pvz_id'),
         ]));
 
         $package = Common\Package::create([
