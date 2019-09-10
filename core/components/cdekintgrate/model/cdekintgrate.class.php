@@ -263,7 +263,7 @@ class cdekIntgrate
             'RecCityCode' => $address->get('cdek_id'),
             'RecipientName' => $address->get('receiver'),
             'RecipientEmail' => $user->Profile->get('email'),
-            'Phone' => $this->modx->getOption('senderPhone', [], '+79996991374'), //TODO: WTF?
+            'Phone' => $address->get('phone'),
             'TariffTypeCode' => $tariffID,
         ]);
 
