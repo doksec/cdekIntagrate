@@ -228,6 +228,13 @@ class cdekIntgrate
                 $this->modx->controller->addLastJavascript($this->jsUrl . 'ms2/init.js');
                 $this->modx->controller->addCss($this->cssUrl . 'ms2/style.css');
                 break;
+            case 'msOnCreateOrder':
+                /** @var msOrder $msOrder */
+                $msOrder = $scriptProperties['msOrder'];
+                if ($this->modx->getOption('cdekintgrate_auto_create', [], true)) {
+                    $this->createCdekOrder($msOrder);
+                }
+                break;
         }
 
     }
@@ -362,6 +369,11 @@ class cdekIntgrate
 
     public function out($msg, $success = false, $obj = null)
     {
+        if ($this->modx->getOption('cdekintgrate_debug', [], true)) {
+            if (!$success) {
+                $this->modx->log(1, $msg);
+            }
+        }
         return [
             'success' => $success,
             'msg' => $msg,

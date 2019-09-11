@@ -6,6 +6,7 @@ return [
         'description' => 'Плагин интеграции СДЭК',
         'events' => [
             'msOnManagerCustomCssJs' => [],
+            'msOnCreateOrder' => [],
         ],
     ],
 ];
