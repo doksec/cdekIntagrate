@@ -20,5 +20,5 @@ return [
         'xtype' => 'combo-boolean',
         'value' => true,
         'area' => 'cdekintgrate_main',
-    ],
+    ]
 ];
