@@ -20,5 +20,15 @@ return [
         'xtype' => 'combo-boolean',
         'value' => true,
         'area' => 'cdekintgrate_main',
-    ]
+    ],
+    'payment_status' => [
+        'xtype' => 'numberfield',
+        'value' => 2,
+        'area' => 'cdekintgrate_main',
+    ],
+    'change_status' => [
+        'xtype' => 'combo-boolean',
+        'value' => false,
+        'area' => 'cdekintgrate_main',
+    ],
 ];

@@ -11,7 +11,7 @@ if (!defined('MODX_CORE_PATH')) {
 return [
     'name' => 'CdekIntgrate',
     'name_lower' => 'cdekintgrate',
-    'version' => '1.1.3',
+    'version' => '1.2.4',
     'release' => 'pl',
     // Install package to site right after build
     'install' => true,

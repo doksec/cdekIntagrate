@@ -235,17 +235,32 @@ class cdekIntgrate
                     $this->createCdekOrder($msOrder);
                 }
                 break;
+            case 'msOnChangeOrderStatus':
+                if ($scriptProperties['status'] == 1) {
+                    return;
+                }
+                if (!$this->modx->getOption('cdekintgrate_change_status', [], false)) {
+                    return;
+                }
+                /** @var msOrder $msOrder */
+                $msOrder = $scriptProperties['order'];
+                $this->changeCdekOrder($msOrder);
+                break;
         }
 
     }
 
     /**
-     * Отправка заказа в сдэк
+     * Отправка/редактирование заказа в сдэк
      * @param msOrder $msOrder
      * @return array
      */
-    public function createCdekOrder(msOrder $msOrder)
+    public function createCdekOrder(msOrder $msOrder, $change = false)
     {
+        /** @var integer $currentStatus */
+        $currentStatus = (int)$msOrder->get('status');
+        /** @var integer $paymentStatus */
+        $paymentStatus = (int)$this->modx->getOption('cdekintgrate_payment_status', [], 2);
         /** @var modUser $user */
         $user = $msOrder->getOne('User');
         /** @var msOrderAddress $address */
@@ -292,24 +307,43 @@ class cdekIntgrate
 
         /** @var msOrderProduct $product */
         foreach ($products as $product) {
-            $package->addItem(new Common\Item([
+            $productArray = [
                 'WareKey' => $product->get('product_id'),
                 'Cost' => $product->get('price'),
                 'Payment' => 0, // Оплата за товар при получении (за единицу товара)
                 'Weight' => $product->get('weight'),
                 'Amount' => $product->get('count'),
                 'Comment' => $product->get('name'),
-            ]));
+            ];
+            if ($this->modx->getOption('cdekintgrate_change_status', [], false)) {
+                if ($currentStatus == $paymentStatus) {
+                    $productArray['Payment'] = 0;
+                } else {
+                    $productArray['Payment'] = $product->get('price');
+                }
+            }
+            $package->addItem(new Common\Item($productArray));
         }
 
         $order->addPackage($package);
 
-        $request = new Requests\DeliveryRequest([
-            'Number' => 'Delivery-' . $msOrder->get('num'),
-        ]);
+        if (!$change) {
+            $request = new Requests\DeliveryRequest([
+                'Number' => 'Delivery-' . $msOrder->get('num'),
+            ]);
+        } else {
+            $request = Requests\UpdateRequest::create([
+                'Number' => $msOrder->get('num'),
+            ]);
+        }
+
         $request->addOrder($order);
 
-        $response = $this->client->sendDeliveryRequest($request);
+        if (!$change) {
+            $response = $this->client->sendDeliveryRequest($request);
+        } else {
+            $response = $this->client->sendUpdateRequest($request);
+        }
 
         if ($response->hasErrors()) {
             $error = '';
@@ -365,6 +399,11 @@ class cdekIntgrate
         file_put_contents($basePath . $name, (string)$response->getBody());
 
         return $this->out('Успешно', true, ['url' => $baseUrl . $name]);
+    }
+
+    public function changeCdekOrder(msOrder $msOrder)
+    {
+        $this->createCdekOrder($msOrder, true);
     }
 
     public function out($msg, $success = false, $obj = null)
