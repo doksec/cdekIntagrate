@@ -29,10 +29,10 @@ if ($transport->xpdo) {
 
         case xPDOTransport::ACTION_UNINSTALL:
             /** @var miniShop2 $miniShop2 */
-//            if ($miniShop2 = $modx->getService('miniShop2')) {
-//                $miniShop2->removePlugin('CdekIntegratorFields');
-//                $modx->log(3, 'Плагин дополнительного поля удален')
-//            }
+            if ($miniShop2 = $modx->getService('miniShop2')) {
+                $miniShop2->removePlugin('CdekIntegratorFields');
+                $modx->log(3, 'Плагин дополнительного поля удален');
+            }
             break;
     }
 }

@@ -72,7 +72,7 @@ Ext.ComponentMgr.onAvailable('minishop2-window-order-update', function () {
                                         const response = JSON.parse(resp.responseText);
                                         if (response.success) {
                                             Ext.Msg.alert('Успешно', response.message);
-                                            window.location.href = response.object.url;
+                                            window.open(response.object.url);
                                         } else {
                                             Ext.Msg.alert('Ошибка', response.message);
                                         }
@@ -95,10 +95,11 @@ Ext.ComponentMgr.onAvailable('minishop2-window-order-update', function () {
                     layout: 'form',
                     items: [
                         {
-                            xtype: 'textfield',
+                            xtype: 'cdekIntagrate-combo-pvz',
                             name: 'addr_pvz_id',
-                            fieldLabel: 'Код пункта самовывоза',
-                            anchor: '100%'
+                            record: self.record,
+                            anchor: '100%',
+                            id: 'pvz_code'
                         },
                         {
                             xtype: 'displayfield',
@@ -117,6 +118,4 @@ Ext.ComponentMgr.onAvailable('minishop2-window-order-update', function () {
             ]
         };
     thisContainer.push(dataPush);
-    console.log(this.record);
-
 });

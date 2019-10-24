@@ -66,10 +66,10 @@ class cdekIntgrate
         $account = $this->modx->getOption('cdek_auth_login', []);
         $password = $this->modx->getOption('cdek_auth_password', []);
         if ($this->modx->getOption('cdekintgrate_tests', [], true)) {
-            $account = 'z9GRRu7FxmO53CQ9cFfI6qiy32wpfTkd';
-            $password = 'w24JTCv4MnAcuRTx0oHjHLDtyt3I6IBq';
+            $account = 'z9GRRu7FxmO53CQ9cFfI6qiy32wpfTkd'; //TODO: Сделать опцией на всякий случай
+            $password = 'w24JTCv4MnAcuRTx0oHjHLDtyt3I6IBq'; //TODO: Сделать опцией на всякий случай
             $this->client = new \CdekSDK\CdekClient($account, $password, new \GuzzleHttp\Client([
-                'base_uri' => 'https://integration.edu.cdek.ru',
+                'base_uri' => 'https://integration.edu.cdek.ru', //TODO: Сделать опцией на всякий случай
             ]));
         } else {
             $this->client = new \CdekSDK\CdekClient($account, $password);
@@ -225,6 +225,13 @@ class cdekIntgrate
         switch ($event->name) {
             case 'msOnManagerCustomCssJs':
                 if ($scriptProperties['page'] != 'orders') return;
+                $configJson = json_encode($this->config);
+                $this->modx->controller->addHtml("
+                    <script>
+                        let cdekIntegrateConfig = $configJson;
+                    </script>
+                ");
+                $this->modx->controller->addLastJavascript($this->jsUrl . 'ms2/misc.js');
                 $this->modx->controller->addLastJavascript($this->jsUrl . 'ms2/init.js');
                 $this->modx->controller->addCss($this->cssUrl . 'ms2/style.css');
                 break;
@@ -404,6 +411,51 @@ class cdekIntgrate
     public function changeCdekOrder(msOrder $msOrder)
     {
         $this->createCdekOrder($msOrder, true);
+    }
+
+    public function getPVZ(msOrder $msOrder)
+    {
+        /** @var msOrderAddress $address */
+        $address = $msOrder->getOne('Address');
+
+        /** @var MsCdek $tariffID */
+        $tariffID = $this->modx->getObject('MsCdek', [
+            'id_delivery' => $msOrder->get('delivery')
+        ]);
+
+        if (!$index = $address->get('index')) {
+            return $this->out('Не задан индекс получателя');
+        }
+
+        if (!$tariffID) {
+            return $this->out('Не найден ID тарифа отправления');
+        } else {
+            $tariffID = $tariffID->get('id_tarif');
+        }
+
+        $request = new Requests\PvzListRequest();
+        $request->setCityPostCode($index);
+        $request->setType('ALL');
+        $request->setCashless(true);
+        $request->setCodAllowed(true);
+        $request->setDressingRoom(true);
+
+        $response = $this->client->sendPvzListRequest($request);
+
+        if ($response->hasErrors()) {
+            return $this->out('Неизвестная ошибка, обратитесь в поддержку');
+        }
+
+        $outArray = [];
+        foreach ($response as $item) {
+            /** @var \CdekSDK\Common\Pvz $item */
+
+            $outArray[] = [
+                'id' => $item->Code,
+                'name' => $item->Name
+            ];
+        };
+        return $this->out('Успешно', true, $outArray);
     }
 
     public function out($msg, $success = false, $obj = null)
