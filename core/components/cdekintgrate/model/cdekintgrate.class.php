@@ -353,12 +353,12 @@ class cdekIntgrate
         }
 
         if ($response->hasErrors()) {
-            $error = '';
-            foreach ($response->getErrors() as $key => $order) {
-                $error = $order->getMessage();
+            $error = [];
+            foreach ($response->getMessages() as $message) {
+                $error[] = $message->getMessage();
             }
 
-            return $this->out($error);
+            return $this->out(implode(',', $error));
         }
 
         $orders = $response->getOrders();
